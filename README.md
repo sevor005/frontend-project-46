@@ -3,3 +3,6 @@
 
 ### Demo
 [Пример сравнения плоских файлов](https://asciinema.org/a/zf0eleFlzPtzhMdh)
+
+### CI
+[![CI](https://github.com/sevor005/actions/workflows/ci.yml/badge.svg)](https://github.com/sevor005/actions/workflows/ci.yml)
