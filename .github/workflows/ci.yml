@@ -21,3 +21,7 @@ jobs:
       - run: npm ci
       - run: make lint
       - run: npm run test:coverage
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v7
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
