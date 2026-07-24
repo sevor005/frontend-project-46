@@ -23,3 +23,7 @@ test('Сравнение плоских файлов JSON', () => {
 
   expect(genDiff(filepath1, filepath2)).toBe(expected);
 });
+
+test('Передача недопустимого формата', () => {
+  expect(() => genDiff('file1.j')).toThrow('Unsupported file format: .j');
+});
