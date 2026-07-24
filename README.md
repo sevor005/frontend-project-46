@@ -8,4 +8,4 @@
 [Пример сравнения плоских файлов](https://asciinema.org/a/zf0eleFlzPtzhMdh)
 
 ### CI
-[![CI](https://github.com/sevor005/actions/workflows/ci.yml/badge.svg)](https://github.com/sevor005/actions/workflows/ci.yml)
+[![CI](https://github.com/sevor005/frontend-project-46/actions/workflows/ci.yml/badge.svg)](https://github.com/sevor005/frontend-project-46/actions/workflows/ci.yml)
