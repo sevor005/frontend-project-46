@@ -6,13 +6,9 @@ import genDiff from '../src/index.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const getFixturePath = filename => path.join(__dirname, '__fixtures__', filename);
+const testFormat = ['json', 'yaml', 'yml'];
 
-test('Сравнение плоских файлов JSON', () => {
-  const filepath1 = getFixturePath('file1.json');
-  const filepath2 = getFixturePath('file2.json');
-
-  const expected = `{
+const expected = `{
 - follow: false
   host: hexlet.io
 - proxy: 123.234.53.22
@@ -21,7 +17,19 @@ test('Сравнение плоских файлов JSON', () => {
 + verbose: true
 }`;
 
-  expect(genDiff(filepath1, filepath2)).toBe(expected);
+const getFixturePath = filename => path.join(__dirname, '__fixtures__', filename);
+
+const createFixturePaths = extension => ({
+  filepath1: getFixturePath(`file1.${extension}`),
+  filepath2: getFixturePath(`file2.${extension}`),
+});
+
+testFormat.forEach((format) => {
+  test(`Сравнение плоских файлов ${format.toUpperCase()}`, () => {
+    const { filepath1, filepath2 } = createFixturePaths(format);
+
+    expect(genDiff(filepath1, filepath2)).toBe(expected);
+  })
 });
 
 test('Передача недопустимого формата', () => {
