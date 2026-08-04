@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { test, expect } from '@jest/globals';
 import genDiff from '../src/index.js';
 import stylish from '../src/formatters/stylish.js';
+import plain from '../src/formatters/plain.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,7 +15,7 @@ const createFixturePaths = extension => ({
   filepath2: getFixturePath(`file2.${extension}`),
 });
 
-const expected = `{
+const expectedStylish = `{
     common: {
       + follow: false
         setting1: Value 1
@@ -59,13 +60,31 @@ const expected = `{
     }
 }`;
 
-test(`Сравнение вложенных файлов .yaml`, () => {
+const expectedPlain = `Property 'common.follow' was added with value: false
+Property 'common.setting2' was removed
+Property 'common.setting3' was updated. From true to null
+Property 'common.setting4' was added with value: 'blah blah'
+Property 'common.setting5' was added with value: [complex value]
+Property 'common.setting6.doge.wow' was updated. From '' to 'so much'
+Property 'common.setting6.ops' was added with value: 'vops'
+Property 'group1.baz' was updated. From 'bas' to 'bars'
+Property 'group1.nest' was updated. From [complex value] to 'str'
+Property 'group2' was removed
+Property 'group3' was added with value: [complex value]`;
+
+test('Сравнение вложенных файлов .yaml в формате plain', () => {
   const { filepath1, filepath2 } = createFixturePaths('yaml');
 
-  expect(genDiff(filepath1, filepath2)).toBe(expected);
+  expect(genDiff(filepath1, filepath2, 'plain')).toBe(expectedPlain);
 });
 
-test('Неизвестный тип узла вызывает ошибку', () => {
+test('Сравнение вложенных файлов .yaml в формате stylish', () => {
+  const { filepath1, filepath2 } = createFixturePaths('yaml');
+
+  expect(genDiff(filepath1, filepath2)).toBe(expectedStylish);
+});
+
+test('Формат stylish: неизвестный тип узла вызывает ошибку', () => {
   const tree = [
     {
       key: 'test',
@@ -75,6 +94,23 @@ test('Неизвестный тип узла вызывает ошибку', () 
   ];
 
   expect(() => stylish(tree)).toThrow('Unknown node type: unknown');
+});
+
+test('Формат plain: неизвестный тип узла вызывает ошибку', () => {
+  const tree = [{
+    key: 'test',
+    type: 'unknown',
+    value: 'value',
+  }];
+
+  expect(() => plain(tree)).toThrow('Unknown node type: unknown');
+});
+
+test('Передача неизвестного форматтера', () => {
+  const { filepath1, filepath2 } = createFixturePaths('yaml');
+
+  expect(() => genDiff(filepath1, filepath2, 'xml'))
+    .toThrow('Unknown format: xml');
 });
 
 test('Передача недопустимого формата', () => {
