@@ -10,5 +10,8 @@
 ### Demo
 [Пример сравнения плоских файлов формата yaml/yml](https://asciinema.org/a/Goby9nFHKpWl9TJN)
 
+### Demo
+[Пример рекурсивного сравнения файлов](https://asciinema.org/a/W25QNjx3dZknq60z)
+
 ### CI
 [![CI](https://github.com/sevor005/frontend-project-46/actions/workflows/ci.yml/badge.svg)](https://github.com/sevor005/frontend-project-46/actions/workflows/ci.yml)
