@@ -11,8 +11,6 @@ const parse = (filepath) => {
 
   const absolutePath = path.resolve(process.cwd(), filepath);
 
-  console.log(absolutePath);
-
   const data = fs.readFileSync(absolutePath, 'utf-8');
 
   if (extension === '.json') {
