@@ -12,8 +12,10 @@ program
   .argument('<filepath2>')
   .description('Compares two configuration files and shows a difference.')
   .option('-f, --format [type]', 'output format')
-  .action((filepath1, filepath2) => {
-    console.log(genDiff(filepath1, filepath2));
+  .action(function (filepath1, filepath2) {
+    const { format } = this.opts();
+
+    console.log(genDiff(filepath1, filepath2, format));
   });
 
 program.parse();
