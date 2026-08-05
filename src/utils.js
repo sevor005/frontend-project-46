@@ -7,3 +7,15 @@ export const STATUSES = {
   CHANGED: 'changed',
   NESTED: 'nested',
 }
+
+export const FORMATTER = {
+  STYLISH: 'stylish',
+  PLAIN: 'plain',
+  JSON: 'json',
+}
+
+export const FORMAT = {
+  YAML: 'yaml',
+  JSON: 'json',
+  XML: 'xml',
+}
