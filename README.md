@@ -16,5 +16,8 @@
 ### Demo
 [Пример работы форматера plain](https://asciinema.org/a/alQgVh0pLalxv3FC)
 
+### Demo
+[Пример работы форматера json](https://asciinema.org/a/lQuNfBaE6uStlcHH)
+
 ### CI
 [![CI](https://github.com/sevor005/frontend-project-46/actions/workflows/ci.yml/badge.svg)](https://github.com/sevor005/frontend-project-46/actions/workflows/ci.yml)
