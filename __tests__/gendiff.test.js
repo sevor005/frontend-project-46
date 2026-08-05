@@ -4,6 +4,7 @@ import { test, expect } from '@jest/globals';
 import genDiff from '../src/index.js';
 import stylish from '../src/formatters/stylish.js';
 import plain from '../src/formatters/plain.js';
+import { FORMATTER, FORMAT } from './../src/utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,6 +61,124 @@ const expectedStylish = `{
     }
 }`;
 
+const expectedJson = `[
+  {
+    "key": "common",
+    "type": "nested",
+    "children": [
+      {
+        "key": "follow",
+        "type": "added",
+        "value": false
+      },
+      {
+        "key": "setting1",
+        "type": "unchanged",
+        "value": "Value 1"
+      },
+      {
+        "key": "setting2",
+        "type": "removed",
+        "value": 200
+      },
+      {
+        "key": "setting3",
+        "type": "changed",
+        "oldValue": true,
+        "newValue": null
+      },
+      {
+        "key": "setting4",
+        "type": "added",
+        "value": "blah blah"
+      },
+      {
+        "key": "setting5",
+        "type": "added",
+        "value": {
+          "key5": "value5"
+        }
+      },
+      {
+        "key": "setting6",
+        "type": "nested",
+        "children": [
+          {
+            "key": "doge",
+            "type": "nested",
+            "children": [
+              {
+                "key": "wow",
+                "type": "changed",
+                "oldValue": "",
+                "newValue": "so much"
+              }
+            ]
+          },
+          {
+            "key": "key",
+            "type": "unchanged",
+            "value": "value"
+          },
+          {
+            "key": "ops",
+            "type": "added",
+            "value": "vops"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "group1",
+    "type": "nested",
+    "children": [
+      {
+        "key": "baz",
+        "type": "changed",
+        "oldValue": "bas",
+        "newValue": "bars"
+      },
+      {
+        "key": "foo",
+        "type": "unchanged",
+        "value": "bar"
+      },
+      {
+        "key": "nest",
+        "type": "changed",
+        "oldValue": {
+          "key": "value"
+        },
+        "newValue": "str"
+      }
+    ]
+  },
+  {
+    "key": "group2",
+    "type": "removed",
+    "value": {
+      "abc": 12345,
+      "deep": {
+        "id": 45
+      }
+    }
+  },
+  {
+    "key": "group3",
+    "type": "added",
+    "value": {
+      "deep": {
+        "id": {
+          "number": 45
+        }
+      },
+      "fee": 100500
+    }
+  }
+]`;
+
+
 const expectedPlain = `Property 'common.follow' was added with value: false
 Property 'common.setting2' was removed
 Property 'common.setting3' was updated. From true to null
@@ -72,19 +191,31 @@ Property 'group1.nest' was updated. From [complex value] to 'str'
 Property 'group2' was removed
 Property 'group3' was added with value: [complex value]`;
 
-test('Сравнение вложенных файлов .yaml в формате plain', () => {
-  const { filepath1, filepath2 } = createFixturePaths('yaml');
+const formats = [
+  [FORMATTER.STYLISH, expectedStylish],
+  [FORMATTER.PLAIN, expectedPlain],
+  [FORMATTER.JSON, expectedJson],
+];
 
-  expect(genDiff(filepath1, filepath2, 'plain')).toBe(expectedPlain);
+test.each(formats)('Сравнение файлов в формате %s', (format, expected) => {
+  const { filepath1, filepath2 } = createFixturePaths(FORMAT.YAML);
+
+  expect(genDiff(filepath1, filepath2, format)).toBe(expected);
 });
 
-test('Сравнение вложенных файлов .yaml в формате stylish', () => {
-  const { filepath1, filepath2 } = createFixturePaths('yaml');
+test.each([
+  [FORMAT.YAML],
+  [FORMAT.JSON],
+])('JSON формат для файлов %s', (extension) => {
+  const { filepath1, filepath2 } = createFixturePaths(extension);
 
-  expect(genDiff(filepath1, filepath2)).toBe(expectedStylish);
+  expect(genDiff(filepath1, filepath2, FORMAT.JSON)).toBe(expectedJson);
 });
 
-test('Формат stylish: неизвестный тип узла вызывает ошибку', () => {
+test.each([
+  [FORMATTER.STYLISH, stylish],
+  [FORMATTER.PLAIN, plain],
+])('Формат %s: неизвестный тип узла вызывает ошибку', (_, formatter) => {
   const tree = [
     {
       key: 'test',
@@ -93,24 +224,15 @@ test('Формат stylish: неизвестный тип узла вызыва�
     },
   ];
 
-  expect(() => stylish(tree)).toThrow('Unknown node type: unknown');
-});
-
-test('Формат plain: неизвестный тип узла вызывает ошибку', () => {
-  const tree = [{
-    key: 'test',
-    type: 'unknown',
-    value: 'value',
-  }];
-
-  expect(() => plain(tree)).toThrow('Unknown node type: unknown');
+  expect(() => formatter(tree))
+    .toThrow('Unknown node type: unknown');
 });
 
 test('Передача неизвестного форматтера', () => {
-  const { filepath1, filepath2 } = createFixturePaths('yaml');
+  const { filepath1, filepath2 } = createFixturePaths(FORMAT.YAML);
 
-  expect(() => genDiff(filepath1, filepath2, 'xml'))
-    .toThrow('Unknown format: xml');
+  expect(() => genDiff(filepath1, filepath2, FORMAT.XML))
+    .toThrow(`Unknown format: ${FORMAT.XML}`);
 });
 
 test('Передача недопустимого формата', () => {
